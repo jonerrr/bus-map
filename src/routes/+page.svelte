@@ -12,8 +12,8 @@
 	let map: maplibregl.Map;
 	let loaded: boolean = false;
 
-	$: if (map && loaded) {
-	}
+	// $: if (map && loaded) {
+	// }
 
 	interface Route {
 		id: string;
@@ -33,10 +33,8 @@
 
 	$: selected_route = null as null | Route;
 	$: selected_stop = null as null | Stop;
-	$: console.log(selected_stop);
 </script>
 
-<!-- TODO: base off css dark mode -->
 <MapLibre
 	bind:map
 	bind:loaded
@@ -91,7 +89,13 @@
 			hoverCursor="pointer"
 			layout={{ visibility: 'visible' }}
 			paint={{
-				'circle-radius': 5,
+				'circle-radius': {
+					base: 3,
+					stops: [
+						[11, 4],
+						[20, 180]
+					]
+				},
 				'circle-color': '#39CCCC',
 				'circle-opacity': 0.8
 			}}
