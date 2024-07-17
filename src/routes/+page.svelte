@@ -71,7 +71,7 @@
 			}}
 		>
 			<Popup>
-				<div class={`${$mode !== 'light' ? 'bg-slate-900' : ''} p-2 max-w-[70vw]`}>
+				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
 					<h1 class="font-bold text-lg" style={`color: ${selected_route?.color}`}>
 						{selected_route?.shortName} | {selected_route?.longName}
 					</h1>
@@ -101,7 +101,7 @@
 			}}
 		>
 			<Popup>
-				<div class={`${$mode !== 'light' ? 'bg-slate-900' : ''} p-2 max-w-[70vw]`}>
+				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
 					<h1 class="font-bold text-lg">
 						{selected_stop?.name}
 					</h1>
