@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { MapLibre, GeoJSON, LineLayer, Popup, CircleLayer } from 'svelte-maplibre';
+	import {
+		MapLibre,
+		GeoJSON,
+		LineLayer,
+		Popup,
+		CircleLayer,
+		GeolocateControl
+	} from 'svelte-maplibre';
 	import { mode } from 'mode-watcher';
 
 	let map: maplibregl.Map;
@@ -39,13 +46,21 @@
 		[-73.700272, 40.917577]
 	]}
 	zoom={12}
-	class="w-screen h-screen"
-	standardControls="bottom-left"
+	class="w-[100dvw] h-[100dvh]"
+	standardControls={false}
 	attributionControl={false}
 	style={$mode !== 'light'
 		? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 		: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'}
 >
+	<GeolocateControl
+		position="bottom-left"
+		trackUserLocation
+		showAccuracyCircle
+		showUserLocation
+		fitBoundsOptions={{ maxZoom: 15 }}
+	/>
+
 	<GeoJSON id="routes" data="/routes.geojson">
 		<LineLayer
 			on:click={(e) => (selected_route = e.detail.features?.[0]?.properties)}
