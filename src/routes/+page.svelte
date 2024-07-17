@@ -65,7 +65,13 @@
 			hoverCursor="pointer"
 			layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 			paint={{
-				'line-width': 5,
+				'line-width': {
+					base: 4,
+					stops: [
+						[11, 5],
+						[18, 12]
+					]
+				},
 				'line-color': ['get', 'color'],
 				'line-opacity': 0.8
 			}}
