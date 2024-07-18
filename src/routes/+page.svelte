@@ -77,7 +77,7 @@
 					20
 				],
 				'line-color': ['get', 'color'],
-				'line-opacity': 0.8
+				'line-opacity': 0.5
 			}}
 		>
 			<Popup>
