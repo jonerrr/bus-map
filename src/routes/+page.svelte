@@ -115,6 +115,16 @@
 					<p>
 						<span class="font-bold">routes</span>: {selected_stop?.routes}
 					</p>
+					<p>
+						<a
+							href={`https://trainstat.us/?dt=bus_stop&id=${selected_stop?.id}`}
+							target="_blank"
+							rel="noopener"
+							class="font-semibold text-md text-blue-400"
+						>
+							Live bus arrivals
+						</a>
+					</p>
 				</div>
 			</Popup>
 		</CircleLayer>
