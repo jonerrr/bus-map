@@ -65,13 +65,17 @@
 			hoverCursor="pointer"
 			layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 			paint={{
-				'line-width': {
-					base: 4,
-					stops: [
-						[11, 5],
-						[18, 12]
-					]
-				},
+				'line-width': [
+					'interpolate',
+					['linear'],
+					['zoom'],
+					// if zoom is less than 15, line width is 10
+					15,
+					10,
+					// if zoom is greater than 17, line width is 20
+					17,
+					20
+				],
 				'line-color': ['get', 'color'],
 				'line-opacity': 0.8
 			}}
@@ -95,13 +99,7 @@
 			hoverCursor="pointer"
 			layout={{ visibility: 'visible' }}
 			paint={{
-				'circle-radius': {
-					base: 3,
-					stops: [
-						[11, 4],
-						[20, 180]
-					]
-				},
+				'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 17, 20],
 				'circle-color': '#39CCCC',
 				'circle-opacity': 0.8
 			}}
