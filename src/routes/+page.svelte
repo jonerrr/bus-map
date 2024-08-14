@@ -8,20 +8,29 @@
 		GeolocateControl
 	} from 'svelte-maplibre';
 	import { mode } from 'mode-watcher';
+	import wk from 'wellknown';
+	import type { PageData } from './$types';
+
+	// export let data: PageData;
+	// $: console.log(data); // check if data is loaded
 
 	let map: maplibregl.Map;
 	let loaded: boolean = false;
 
 	// $: if (map && loaded) {
 	// }
+	// wait for data promise to load
+	// $: if (data) {
+	// 	console.log(data);
+	// }
 
 	interface Route {
 		id: string;
 		color: string;
 		// blame shapefile for this
-		descriptio: string;
-		longName: string;
-		shortName: string;
+		long_name: string;
+		short_name: string;
+		shuttle: boolean;
 	}
 
 	interface Stop {
@@ -33,6 +42,7 @@
 
 	$: selected_route = null as null | Route;
 	$: selected_stop = null as null | Stop;
+	$: console.log(selected_route);
 </script>
 
 <MapLibre
@@ -59,7 +69,7 @@
 		fitBoundsOptions={{ maxZoom: 15 }}
 	/>
 
-	<GeoJSON id="routes" data="/routes.geojson">
+	<GeoJSON id="routes" data="/bus_routes.geojson">
 		<LineLayer
 			on:click={(e) => (selected_route = e.detail.features?.[0]?.properties)}
 			hoverCursor="pointer"
@@ -71,7 +81,7 @@
 					['zoom'],
 					// if zoom is less than 15, line width is 10
 					15,
-					10,
+					4,
 					// if zoom is greater than 17, line width is 20
 					17,
 					20
@@ -83,10 +93,10 @@
 			<Popup>
 				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
 					<h1 class="font-bold text-lg" style={`color: ${selected_route?.color}`}>
-						{selected_route?.shortName} | {selected_route?.longName}
+						{selected_route?.short_name} | {selected_route?.long_name}
 					</h1>
 					<p>
-						{selected_route?.descriptio}
+						<!-- TODO: stuff -->
 					</p>
 				</div>
 			</Popup>
@@ -103,6 +113,7 @@
 				'circle-color': '#39CCCC',
 				'circle-opacity': 0.8
 			}}
+			minzoom={13}
 		>
 			<Popup>
 				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>

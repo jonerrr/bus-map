@@ -4,28 +4,33 @@ import requests
 
 
 def read_routes():
-    gdf: gpd.GeoDataFrame = gpd.read_file("shapefiles/routes.shp")
-    print(gdf[["id", "longName"]])
-    gdf = gdf.drop(columns=["id"])
+    # gdf: gpd.GeoDataFrame = gpd.read_file("shapefiles/routes.shp")
+    # print(gdf[["id", "longName"]])
+    # gdf = gdf.drop(columns=["id"])
 
-    df = pd.read_json("https://trainstat.us/api/bus/routes")
+    r = requests.get("http://localhost:3055/bus/routes?geom=true").json()
+
+    df = pd.json_normalize(r)
+    df = df.explode("geom")
+    print(df.dtypes)
+    quit()
     # merge gdf and df on longName
-    df = df.rename(
-        columns={
-            "long_name": "longName",
-            # "descriptio": "description",
-        }
-    )
-    gdf = gdf.merge(df, on="longName")
-    gdf = gdf.drop(columns=["short_name"])
+    # df = df.rename(
+    #     columns={
+    #         "long_name": "longName",
+    #         # "descriptio": "description",
+    #     }
+    # )
+    # gdf = gdf.merge(df, on="longName")
+    # gdf = gdf.drop(columns=["short_name"])
 
-    gdf = gpd.GeoDataFrame(gdf)
-    print(gdf.columns)
+    # gdf = gpd.GeoDataFrame(gdf)
+    # print(gdf.columns)
 
-    # add a hashtag to the start of each color
-    gdf["color"] = "#" + gdf["color"]
+    # # add a hashtag to the start of each color
+    # gdf["color"] = "#" + gdf["color"]
 
-    gdf.to_file(r"../static/routes.geojson", driver="GeoJSON")
+    # gdf.to_file(r"../static/routes.geojson", driver="GeoJSON")
 
 
 def read_stops():
@@ -44,5 +49,5 @@ def read_stops():
 
 
 if __name__ == "__main__":
-    # read_routes()
-    read_stops()
+    read_routes()
+    # read_stops()
