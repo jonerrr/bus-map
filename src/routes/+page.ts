@@ -1,21 +1,13 @@
-// import type { PageLoad } from './$types';
+import type { PageLoad } from './$types';
 
-// interface Route {
-// 	id: string;
-// 	long_name: string;
-// 	short_name: string;
-// 	shuttle: boolean;
-// 	geom: Geom[];
-// }
+// load data here first for SSR benefits (i think)
+export const load: PageLoad = async ({ fetch }) => {
+	const trips_promise = fetch('/api/bus/trips/geojson').then((res) => res.json());
+	// const routes_promise = fetch('/api/bus/routes/geojson').then((res) => res.json());
 
-// interface Geom {
-// 	direction: 0 | 1;
-// 	wkt: string;
-// }
+	const [trips] = await Promise.all([trips_promise]);
 
-// // load data here first for SSR benefits (i think)
-// export const load: PageLoad = async ({ fetch }) => {
-// 	return {
-// 		routes: (await (await fetch('/api/bus/routes?geom=true')).json()) as Route[]
-// 	};
-// };
+	return {
+		trips
+	};
+};

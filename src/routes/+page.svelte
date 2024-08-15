@@ -1,59 +1,54 @@
 <script lang="ts">
-	import {
-		MapLibre,
-		GeoJSON,
-		LineLayer,
-		Popup,
-		CircleLayer,
-		GeolocateControl
-	} from 'svelte-maplibre';
+	import { MapLibre, GeolocateControl } from 'svelte-maplibre';
 	import { mode } from 'mode-watcher';
-	import wk from 'wellknown';
-	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
+	import { invalidate } from '$app/navigation';
+	import { page } from '$app/stores';
+	// import type { PageData } from './$types';
+	import Routes from '$lib/Routes.svelte';
+	import Trips from '$lib/Trips.svelte';
+	import Stops from '$lib/Stops.svelte';
 
 	// export let data: PageData;
-	// $: console.log(data); // check if data is loaded
 
 	let map: maplibregl.Map;
 	let loaded: boolean = false;
 
-	// $: if (map && loaded) {
-	// }
-	// wait for data promise to load
-	// $: if (data) {
-	// 	console.log(data);
-	// }
+	onMount(() => {
+		setInterval(async () => {
+			console.log('updating trips');
+			await invalidate('/api/bus/trips/geojson');
+		}, 10000);
+	});
 
-	interface Route {
-		id: string;
-		color: string;
-		// blame shapefile for this
-		long_name: string;
-		short_name: string;
-		shuttle: boolean;
-	}
-
-	interface Stop {
-		id: number;
-		direction: string;
-		name: string;
-		routes: string;
-	}
-
-	$: selected_route = null as null | Route;
-	$: selected_stop = null as null | Stop;
-	$: console.log(selected_route);
+	// TODO: set line thickness of routes to prevent overlapping
+	// maybe use https://stackoverflow.com/questions/72251218/variable-line-offset-in-mapbox line offset to prevent overlapping
 </script>
 
 <MapLibre
 	bind:map
 	bind:loaded
+	on:load={async () => {
+		const bus_right = await map.loadImage(
+			$mode !== 'light' ? '/bus_white_right.png' : '/bus_black_right.png'
+		);
+		map.addImage('bus_right', bus_right.data);
+
+		const bus_left = await map.loadImage(
+			$mode !== 'light' ? '/bus_white_left.png' : '/bus_black_left.png'
+		);
+		map.addImage('bus_left', bus_left.data);
+
+		const stop = await map.loadImage($mode !== 'light' ? '/bus_stop.png' : '/bus_stop.png');
+		map.addImage('bus_stop', stop.data);
+	}}
 	center={[-74.006, 40.7128]}
 	maxBounds={[
 		[-74.25909, 40.477399],
 		[-73.700272, 40.917577]
 	]}
 	zoom={12}
+	diffStyleUpdates
 	class="w-[100dvw] h-[100dvh]"
 	standardControls={false}
 	attributionControl={false}
@@ -69,77 +64,11 @@
 		fitBoundsOptions={{ maxZoom: 15 }}
 	/>
 
-	<GeoJSON id="routes" data="/bus_routes.geojson">
-		<LineLayer
-			on:click={(e) => (selected_route = e.detail.features?.[0]?.properties)}
-			hoverCursor="pointer"
-			layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-			paint={{
-				'line-width': [
-					'interpolate',
-					['linear'],
-					['zoom'],
-					// if zoom is less than 15, line width is 10
-					15,
-					4,
-					// if zoom is greater than 17, line width is 20
-					17,
-					20
-				],
-				'line-color': ['get', 'color'],
-				'line-opacity': 0.5
-			}}
-		>
-			<Popup>
-				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
-					<h1 class="font-bold text-lg" style={`color: ${selected_route?.color}`}>
-						{selected_route?.short_name} | {selected_route?.long_name}
-					</h1>
-					<p>
-						<!-- TODO: stuff -->
-					</p>
-				</div>
-			</Popup>
-		</LineLayer>
-	</GeoJSON>
+	<Routes geojson={$page.data.routes} />
 
-	<GeoJSON id="stops" data="/stops.geojson">
-		<CircleLayer
-			on:click={(e) => (selected_stop = e.detail.features?.[0]?.properties)}
-			hoverCursor="pointer"
-			layout={{ visibility: 'visible' }}
-			paint={{
-				'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 17, 20],
-				'circle-color': '#39CCCC',
-				'circle-opacity': 0.8
-			}}
-			minzoom={13}
-		>
-			<Popup>
-				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
-					<h1 class="font-bold text-lg">
-						{selected_stop?.name}
-					</h1>
-					<p>
-						<span class="font-bold">direction</span>: {selected_stop?.direction}
-					</p>
-					<p>
-						<span class="font-bold">routes</span>: {selected_stop?.routes}
-					</p>
-					<p>
-						<a
-							href={`https://trainstat.us/?dt=bus_stop&id=${selected_stop?.id}`}
-							target="_blank"
-							rel="noopener"
-							class="font-semibold text-md text-blue-400"
-						>
-							Live bus arrivals
-						</a>
-					</p>
-				</div>
-			</Popup>
-		</CircleLayer>
-	</GeoJSON>
+	<Stops />
+
+	<Trips geojson={$page.data.trips} />
 </MapLibre>
 
 <style>
