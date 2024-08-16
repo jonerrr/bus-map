@@ -14,7 +14,8 @@
 	let clicked_feature: Route | null = null;
 </script>
 
-<GeoJSON id="routes" data={geojson}>
+<!-- data={geojson} -->
+<GeoJSON id="routes" data="/routes_snapped.geojson">
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer
 		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
@@ -33,7 +34,7 @@
 				20
 			],
 			'line-color': ['get', 'color'],
-			'line-opacity': 0.5
+			'line-opacity': 1.0
 		}}
 	>
 		<Popup>

@@ -21,7 +21,7 @@
 		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
 		hoverCursor="pointer"
 		layout={{
-			'icon-image': ['match', ['get', 'direction'], 0, 'bus_left', 1, 'bus_right', 'bus_left'],
+			'icon-image': ['match', ['get', 'direction'], 0, 'bus_right', 1, 'bus_left', 'bus_left'],
 			'icon-size': ['interpolate', ['exponential', 0.5], ['zoom'], 8, 0.05, 17, 0.1]
 		}}
 	>

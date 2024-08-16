@@ -1,3 +1,5 @@
-# Bus Map
+# Realtime NYCT Bus Map
 
-Map of all NYCT buses
+This data mainly comes from the <https://trainstat.us> API
+
+**Website is currently offline, will be back up soon**

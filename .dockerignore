@@ -1,0 +1,12 @@
+.svelte-kit
+node_modules
+tests
+.dockerignore
+.eslintignore
+.eslintrc.cjs
+.gitignore
+.npmrc
+.prettierignore
+.prettierrc
+Dockerfile
+playwright.config.ts
