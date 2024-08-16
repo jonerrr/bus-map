@@ -15,7 +15,7 @@
 </script>
 
 <!-- data={geojson} -->
-<GeoJSON id="routes" data="/routes_snapped.geojson">
+<GeoJSON id="routes" data={geojson}>
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer
 		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
@@ -28,13 +28,15 @@
 				['zoom'],
 				// if zoom is less than 15, line width is 10
 				15,
-				4,
+				2,
 				// if zoom is greater than 17, line width is 20
 				17,
-				20
+				10
 			],
+
 			'line-color': ['get', 'color'],
 			'line-opacity': 1.0
+			// 'line-offset': 5
 		}}
 	>
 		<Popup>

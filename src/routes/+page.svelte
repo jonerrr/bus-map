@@ -48,6 +48,7 @@
 		[-73.700272, 40.917577]
 	]}
 	zoom={12}
+	maxZoom={17}
 	diffStyleUpdates
 	class="w-[100dvw] h-[100dvh]"
 	standardControls={false}
@@ -65,9 +66,7 @@
 	/>
 
 	<Routes geojson={$page.data.routes} />
-
 	<Stops />
-
 	<Trips geojson={$page.data.trips} />
 </MapLibre>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GeoJSON, Popup, SymbolLayer } from 'svelte-maplibre';
+	import { GeoJSON, Popup, SymbolLayer, CircleLayer } from 'svelte-maplibre';
 
 	// export let geojson;
 	// TODO: get stops geojson from api
@@ -15,12 +15,13 @@
 </script>
 
 <GeoJSON id="stops" data="/stops.geojson">
-	<SymbolLayer
+	<CircleLayer
 		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
 		hoverCursor="pointer"
-		layout={{
-			'icon-image': 'bus_stop',
-			'icon-size': ['interpolate', ['exponential', 0.5], ['zoom'], 8, 0.05, 17, 0.1]
+		paint={{
+			'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 17, 15],
+			'circle-color': '#0074D9',
+			'circle-opacity': 1
 		}}
 		minzoom={14}
 	>
@@ -47,5 +48,5 @@
 				</p>
 			</div>
 		</Popup>
-	</SymbolLayer>
+	</CircleLayer>
 </GeoJSON>
