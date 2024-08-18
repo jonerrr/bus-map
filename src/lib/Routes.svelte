@@ -14,7 +14,6 @@
 	let clicked_feature: Route | null = null;
 </script>
 
-<!-- data={geojson} -->
 <GeoJSON id="routes" data={geojson}>
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer

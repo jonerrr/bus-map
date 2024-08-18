@@ -23,7 +23,7 @@ for line in tqdm(df.geometry, desc="Snapping lines"):
     # Find the closest line in df_cl
     closest_line = df_cl.geometry.distance(line).idxmin()
     snapped_line = snap(
-        line, df_cl.geometry[closest_line], tolerance=10
+        line, df_cl.geometry[closest_line], tolerance=50
     )  # Adjust tolerance as needed
     snapped_geometries.append(snapped_line)
 

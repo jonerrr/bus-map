@@ -26,9 +26,17 @@
 		}}
 	>
 		<Popup>
-			<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
-				<h1 class="font-bold text-lg">{clicked_feature?.route_id}</h1>
-			</div>
+			{#if clicked_feature}
+				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
+					<h1 class="font-bold text-lg">{clicked_feature?.route_id}</h1>
+					{#if clicked_feature.passengers && clicked_feature.capacity}
+						<p>
+							<span class="font-bold">passengers</span>: {clicked_feature.passengers} / {clicked_feature.capacity}
+						</p>
+					{/if}
+					<p></p>
+				</div>
+			{/if}
 		</Popup>
 	</SymbolLayer>
 </GeoJSON>

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { GeoJSON, Popup, SymbolLayer, CircleLayer } from 'svelte-maplibre';
 
-	// export let geojson;
-	// TODO: get stops geojson from api
+	export let geojson;
 
 	interface Stop {
 		direction: string;
@@ -14,7 +13,7 @@
 	let clicked_feature: Stop | null = null;
 </script>
 
-<GeoJSON id="stops" data="/stops.geojson">
+<GeoJSON id="stops" data={geojson}>
 	<CircleLayer
 		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
 		hoverCursor="pointer"

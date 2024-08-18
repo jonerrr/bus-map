@@ -66,7 +66,7 @@
 	/>
 
 	<Routes geojson={$page.data.routes} />
-	<Stops />
+	<Stops geojson={$page.data.stops} />
 	<Trips geojson={$page.data.trips} />
 </MapLibre>
 
