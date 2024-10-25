@@ -2,4 +2,4 @@
 
 This data comes from the <https://trainstat.us> API
 
-**Website is currently offline, will be back up soon**
+Currently up at: <https://map.trainstat.us>
