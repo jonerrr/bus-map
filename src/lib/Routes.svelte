@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { GeoJSON, Popup, LineLayer } from 'svelte-maplibre';
+	import { env } from '$env/dynamic/public';
 
-	export let geojson;
+	const { geojson }: { geojson: string } = $props();
 
 	interface Route {
 		id: string;
@@ -11,13 +12,15 @@
 		shuttle: boolean;
 	}
 
-	let clicked_feature: Route | null = null;
+	let clicked_feature: Route | undefined = $state();
+
+	// $inspect(clicked_feature);
 </script>
 
 <GeoJSON id="routes" data={geojson}>
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer
-		on:click={(e) => (clicked_feature = e.detail.features[0].properties)}
+		on:click={(e) => (clicked_feature = e.detail.features[0].properties as Route)}
 		hoverCursor="pointer"
 		layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 		paint={{
@@ -39,14 +42,23 @@
 		}}
 	>
 		<Popup>
-			<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
-				<h1 class="font-bold text-lg" style={`color: ${clicked_feature?.color}`}>
-					{clicked_feature?.short_name} | {clicked_feature?.long_name}
-				</h1>
-				<p>
-					<!-- TODO: stuff -->
-				</p>
-			</div>
+			{#if clicked_feature}
+				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
+					<h1 class="font-bold text-lg" style={`color: ${clicked_feature.color}`}>
+						{clicked_feature.short_name} | {clicked_feature.long_name}
+					</h1>
+					<div>
+						<a
+							href={`${env.PUBLIC_FRONTEND_URL}/?d=${encodeURIComponent(clicked_feature.id)}`}
+							target="_blank"
+							rel="noopener"
+							class="font-semibold text-md text-blue-400"
+						>
+							Live bus alerts
+						</a>
+					</div>
+				</div>
+			{/if}
 		</Popup>
 	</LineLayer>
 </GeoJSON>

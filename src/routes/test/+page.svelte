@@ -4,45 +4,74 @@
 	import { onMount } from 'svelte';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import Routes from '$lib/Routes.svelte';
-	import Trips from '$lib/Trips.svelte';
-	import Stops from '$lib/Stops.svelte';
+	// import type { PageData } from './$types';
 
-	// import StopsCool from '$lib/light-version/Stops.svelte';
-	// import TripsCool from '$lib/light-version/Trips.svelte';
-	// import RoutesCool from '$lib/light-version/Routes.svelte';
+	import StopsCool from '$lib/lite-version/Stops.svelte';
+	import TripsCool from '$lib/lite-version/Trips.svelte';
+	import RoutesCool from '$lib/lite-version/Routes.svelte';
 
-	// let map: maplibregl.Map | undefined = $state();
-	// let loaded: boolean = $state(false);
+	// export let data: PageData;
+
+	function getRandomLatLng(bounds: {
+		minLat: number;
+		maxLat: number;
+		minLng: number;
+		maxLng: number;
+	}): { lat: number; lng: number } {
+		const lat = Math.random() * (bounds.maxLat - bounds.minLat) + bounds.minLat;
+		const lng = Math.random() * (bounds.maxLng - bounds.minLng) + bounds.minLng;
+		return { lat, lng };
+	}
+
+	// Example usage:
+	const bounds = {
+		minLat: 40.477399,
+		maxLat: 40.917577,
+		minLng: -74.25909,
+		maxLng: -73.700272
+	};
+
+	const randomLocation = getRandomLatLng(bounds);
+	console.log(randomLocation);
+
+	let map: maplibregl.Map;
+	let loaded: boolean = false;
 
 	onMount(() => {
-		const interval = setInterval(async () => {
+		setInterval(async () => {
 			console.log('updating trips');
-			await invalidate('app:trips');
-		}, 20000);
+			await invalidate((url) => url.pathname === '/api/bus/trips/geojson');
 
-		return () => clearInterval(interval);
+			const new_loc = getRandomLatLng(bounds);
+
+			map.flyTo({
+				center: [new_loc.lng, new_loc.lat],
+				zoom: 15,
+				speed: 0.5
+			});
+			// await invalidateAll();
+		}, 30000);
 	});
 
 	// TODO: set line thickness of routes to prevent overlapping
 	// maybe use https://stackoverflow.com/questions/72251218/variable-line-offset-in-mapbox line offset to prevent overlapping
 </script>
 
-<!-- diffStyleUpdates -->
 <MapLibre
-	let:map
-	on:load={async (e) => {
-		const map = e.detail;
-
+	bind:map
+	bind:loaded
+	on:load={async () => {
 		// list layers
-		// const layers = map.getStyle().layers;
-		// console.log(layers.map((l) => l.id));
-		// layers.forEach((layer) => {
-		// 	// if (layer.id === 'background') {
-		// 	// 	map.moveLayer(layer.id, 'waterway-label');
-		// 	// }
-		// 	map.setLayoutProperty(layer.id, 'visibility', 'none');
-		// });
+		const layers = map.getStyle().layers;
+		console.log(layers.map((l) => l.id));
+		layers.forEach((layer) => {
+			// if (layer.id === 'background') {
+			// 	map.moveLayer(layer.id, 'waterway-label');
+			// }
+			if (layer.id !== 'background') {
+				map.setLayoutProperty(layer.id, 'visibility', 'none');
+			}
+		});
 		// disable background
 		// map.setLayoutProperty('background', 'visibility', 'none');
 		// map.setLayoutProperty('background', 'visibility', 'none');
@@ -69,8 +98,14 @@
 		[-74.25909, 40.477399],
 		[-73.700272, 40.917577]
 	]}
-	zoom={12}
-	maxZoom={17}
+	bounds={[
+		[-74.25909, 40.477399],
+		[-73.700272, 40.917577]
+	]}
+	zoom={15}
+	minZoom={15}
+	maxZoom={15}
+	diffStyleUpdates
 	class="w-[100dvw] h-[100dvh]"
 	standardControls={false}
 	attributionControl={false}
@@ -85,10 +120,13 @@
 		showUserLocation
 		fitBoundsOptions={{ maxZoom: 15 }}
 	/>
+	<RoutesCool geojson={$page.data.routes} />
+	<!-- <StopsCool geojson={$page.data.stops} /> -->
+	<TripsCool geojson={$page.data.trips} />
 
-	<Routes geojson={$page.data.routes} />
+	<!-- <Routes geojson={$page.data.routes} />
 	<Stops geojson={$page.data.stops} />
-	<Trips geojson={$page.data.trips} {map} />
+	<Trips geojson={$page.data.trips} /> -->
 </MapLibre>
 
 <style>
