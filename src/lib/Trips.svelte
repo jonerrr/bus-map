@@ -66,28 +66,27 @@
 	>
 		<Popup>
 			{#if clicked_feature}
-				<div class={`bg-slate-800 p-2 max-w-[70vw]`}>
+				<div class={`max-w-[70vw] flex flex-col gap-1 text-black`}>
 					<h1 class="font-bold text-lg">{clicked_feature.route_id}</h1>
 					{#if clicked_feature.passengers && clicked_feature.capacity}
-						<p>
+						<div class="flex gap-1">
 							<span class="font-bold">passengers</span>: {clicked_feature.passengers} / {clicked_feature.capacity}
-						</p>
+						</div>
 					{:else}
-						<p>
+						<div class="flex gap-1">
 							<span class="font-bold">passengers</span>: unknown
-						</p>
+						</div>
 					{/if}
-					<p></p>
-					<p>
+					<div>
 						<a
 							href={`${env.PUBLIC_FRONTEND_URL}/?d=${clicked_feature.id}`}
 							target="_blank"
 							rel="noopener"
-							class="font-semibold text-md text-blue-400"
+							class="font-semibold underline text-md text-indigo-700"
 						>
-							Live bus arrivals
+							Live Trip Updates
 						</a>
-					</p>
+					</div>
 				</div>
 			{/if}
 		</Popup>

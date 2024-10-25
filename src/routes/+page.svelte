@@ -91,10 +91,10 @@
 	<Trips geojson={$page.data.trips} {map} />
 </MapLibre>
 
-<style>
+<!-- <style>
 	:global(.maplibregl-popup-content) {
 		background-color: var(--color-bg);
 		color: var(--color-text);
 		padding: 0px;
 	}
-</style>
+</style> -->

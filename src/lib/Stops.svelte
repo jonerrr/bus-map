@@ -44,7 +44,7 @@
 	>
 		<Popup>
 			{#if clicked_feature}
-				<div class={`bg-slate-800 p-2 max-w-[70vw] rounded-xl flex flex-col gap-1`}>
+				<div class={`rounded-xl flex flex-col gap-1 text-black`}>
 					<h1 class="font-bold text-lg">
 						{clicked_feature.name}
 					</h1>
@@ -68,7 +68,7 @@
 							href={`${env.PUBLIC_FRONTEND_URL}/?d=${clicked_feature.id}`}
 							target="_blank"
 							rel="noopener"
-							class="font-semibold text-md text-blue-400"
+							class="font-semibold underline text-md text-indigo-700"
 						>
 							Live bus arrivals
 						</a>
