@@ -51,6 +51,9 @@
 		// map.setLayoutProperty('background', 'visibility', 'none');
 		// map.setLayoutProperty('background', 'visibility', 'none');
 
+		// const bus_up = await map.loadImage($mode !== 'light' ? '/bus-up-white.png' : '/bus-up.png');
+		// map.addImage('bus_up', bus_up.data);
+
 		const bus_right = await map.loadImage(
 			$mode !== 'light' ? '/bus_white_right.png' : '/bus_black_right.png'
 		);
