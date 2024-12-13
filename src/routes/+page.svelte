@@ -14,6 +14,7 @@
 
 	// let map: maplibregl.Map | undefined = $state();
 	// let loaded: boolean = $state(false);
+	let map = $state<maplibregl.Map>();
 
 	onMount(() => {
 		const interval = setInterval(async () => {
@@ -30,10 +31,8 @@
 
 <!-- diffStyleUpdates -->
 <MapLibre
-	let:map
-	on:load={async (e) => {
-		const map = e.detail;
-
+	bind:map
+	onload={async (map) => {
 		// list layers
 		// const layers = map.getStyle().layers;
 		// console.log(layers.map((l) => l.id));
@@ -54,18 +53,30 @@
 		// const bus_up = await map.loadImage($mode !== 'light' ? '/bus-up-white.png' : '/bus-up.png');
 		// map.addImage('bus_up', bus_up.data);
 
-		const bus_right = await map.loadImage(
-			$mode !== 'light' ? '/bus_white_right.png' : '/bus_black_right.png'
-		);
-		map.addImage('bus_right', bus_right.data);
+		const images = [
+			`bus_${$mode !== 'light' ? 'white' : 'black'}_left`,
+			// `but_white_right`,
+			'bus_full',
+			'bus_half_full'
+		];
 
-		const bus_left = await map.loadImage(
-			$mode !== 'light' ? '/bus_white_left.png' : '/bus_black_left.png'
-		);
-		map.addImage('bus_left', bus_left.data);
+		for (const img of images) {
+			const image = await map.loadImage(`/${img}.png`);
+			map.addImage(img, image.data);
+		}
 
-		const stop = await map.loadImage($mode !== 'light' ? '/bus_stop.png' : '/bus_stop.png');
-		map.addImage('bus_stop', stop.data);
+		// const bus_right = await map.loadImage(
+		// 	$mode !== 'light' ? '/bus_white_right.png' : '/bus_black_right.png'
+		// );
+		// map.addImage('bus_right', bus_right.data);
+
+		// const bus_left = await map.loadImage(
+		// 	$mode !== 'light' ? '/bus_white_left.png' : '/bus_black_left.png'
+		// );
+		// map.addImage('bus_left', bus_left.data);
+
+		// const stop = await map.loadImage($mode !== 'light' ? '/bus_stop.png' : '/bus_stop.png');
+		// map.addImage('bus_stop', stop.data);
 	}}
 	center={[-74.006, 40.7128]}
 	maxBounds={[

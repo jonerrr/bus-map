@@ -12,7 +12,7 @@
 		shuttle: boolean;
 	}
 
-	let clicked_feature: Route | undefined = $state();
+	// let clicked_feature: Route | undefined = $state();
 
 	// $inspect(clicked_feature);
 </script>
@@ -20,21 +20,21 @@
 <GeoJSON id="routes" data={geojson}>
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer
-		on:click={(e) => (clicked_feature = e.detail.features[0].properties as Route)}
 		hoverCursor="pointer"
 		layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 		paint={{
-			'line-width': [
-				'interpolate',
-				['linear'],
-				['zoom'],
-				// if zoom is less than 15, line width is 10
-				15,
-				2,
-				// if zoom is greater than 17, line width is 20
-				17,
-				10
-			],
+			// 'line-width': [
+			// 	'interpolate',
+			// 	['linear'],
+			// 	['zoom'],
+			// 	// if zoom is less than 15, line width is 10
+			// 	15,
+			// 	2,
+			// 	// if zoom is greater than 17, line width is 20
+			// 	17,
+			// 	10
+			// ],
+			'line-width': 4,
 
 			'line-color': ['get', 'color'],
 			'line-opacity': 1.0
@@ -42,23 +42,26 @@
 		}}
 	>
 		<Popup>
-			{#if clicked_feature}
-				<div class={`max-w-[70vw]`}>
-					<h1 class="font-bold text-lg" style={`color: ${clicked_feature.color}`}>
-						{clicked_feature.short_name} | {clicked_feature.long_name}
-					</h1>
-					<div>
-						<a
-							href={`${env.PUBLIC_FRONTEND_URL}/?d=${encodeURIComponent(clicked_feature.id)}`}
-							target="_blank"
-							rel="noopener"
-							class="font-semibold underline text-md text-indigo-700"
-						>
-							Live bus alerts
-						</a>
+			{#snippet children({ data }: { data: GeoJSON.Feature<GeoJSON.Geometry, Route> | undefined })}
+				{#if data}
+					{@const clicked_feature = data.properties}
+					<div class={`max-w-[70vw]`}>
+						<h1 class="font-bold text-lg" style={`color: ${clicked_feature.color}`}>
+							{clicked_feature.short_name} | {clicked_feature.long_name}
+						</h1>
+						<div>
+							<a
+								href={`${env.PUBLIC_FRONTEND_URL}/?r=${encodeURIComponent(clicked_feature.id)}`}
+								target="_blank"
+								rel="noopener"
+								class="font-semibold underline text-md text-indigo-700"
+							>
+								Live bus alerts
+							</a>
+						</div>
 					</div>
-				</div>
-			{/if}
+				{/if}
+			{/snippet}
 		</Popup>
 	</LineLayer>
 </GeoJSON>
