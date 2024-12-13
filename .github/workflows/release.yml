@@ -48,7 +48,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: Release ${{ env.VERSION }}
+          title: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
       # - name: Create Release
       #   uses: actions/create-release@v1
