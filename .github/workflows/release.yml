@@ -35,13 +35,13 @@ jobs:
       - name: Bump version
         id: bump_version
         run: |
+          git config --global user.name 'Jonah'
+          git config --global user.email '73760377+jonerrr@users.noreply.github.com'
           pnpm version ${{ github.event.inputs.type }} -m "ci: bump version to %s"
           echo "VERSION=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
 
       - name: Push changes
         run: |
-          git config --global user.name 'Jonah'
-          git config --global user.email '73760377+jonerrr@users.noreply.github.com'
           git push origin main --follow-tags
 
       - name: Create a Release
