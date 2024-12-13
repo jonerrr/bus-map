@@ -2,6 +2,7 @@
 	"name": "bus-map",
 	"version": "0.2.3",
 	"private": true,
+	"packageManager": "pnpm@9.7.1",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
