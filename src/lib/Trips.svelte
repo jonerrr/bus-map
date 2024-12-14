@@ -2,7 +2,14 @@
 	import { GeoJSON, Popup, SymbolLayer } from 'svelte-maplibre';
 	import { env } from '$env/dynamic/public';
 
-	const { geojson, map }: { geojson: string; map: maplibregl.Map } = $props();
+	interface Props {
+		geojson: string;
+		map: maplibregl.Map;
+		filter?: maplibregl.ExpressionSpecification;
+		show_overlapping: boolean;
+	}
+
+	const { geojson, map, filter, show_overlapping }: Props = $props();
 	// TODO: use GeoJSON type
 	interface Trip {
 		id: string;
@@ -16,8 +23,6 @@
 		bearing: number;
 		vehicle_id: string;
 	}
-
-	let clicked_feature = $state<Trip>();
 
 	// $effect(() => {
 	// 	console.log(map.getStyle().layers);
@@ -60,6 +65,7 @@
 	<SymbolLayer
 		id="trips"
 		hoverCursor="pointer"
+		{filter}
 		layout={{
 			// 'icon-image': ['match', ['get', 'direction'], 0, 'bus_right', 1, 'bus_left', 'bus_left'],
 			// 'icon-image': 'bus_white_left',
@@ -95,11 +101,10 @@
 				// Default icon if none of the above conditions are met
 				'bus_white_left'
 			],
-
 			// 'icon-size': ['interpolate', ['exponential', 0.5], ['zoom'], 8, 0.05, 17, 0.1],
 			'icon-size': 0.1,
 			'icon-rotate': ['coalesce', ['get', 'bearing'], 0],
-			'icon-allow-overlap': true
+			'icon-allow-overlap': show_overlapping
 		}}
 	>
 		<Popup>

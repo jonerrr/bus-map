@@ -7,6 +7,7 @@
 	import Routes from '$lib/Routes.svelte';
 	import Trips from '$lib/Trips.svelte';
 	import Stops from '$lib/Stops.svelte';
+	import { slide } from 'svelte/transition';
 
 	// import StopsCool from '$lib/light-version/Stops.svelte';
 	// import TripsCool from '$lib/light-version/Trips.svelte';
@@ -25,10 +26,63 @@
 		return () => clearInterval(interval);
 	});
 
+	let show_overlapping = $state(true);
+	let show_unknown = $state(true);
+	let min_val = $state<number>();
+	let max_val = $state<number>();
+
+	const trips_filter: maplibregl.ExpressionSpecification | undefined = $derived.by(() => {
+		// if (!min_val && !max_val) return undefined;
+
+		const filter: maplibregl.ExpressionSpecification = ['all'];
+		// need to coalesce bc some values are null
+		if (!show_unknown)  filter.push(['!=', ['coalesce', ['get', 'passengers'], -1], -1]);
+		if (min_val) filter.push(['>=', ['coalesce', ['get', 'passengers'], 0], min_val]);
+		if (max_val) filter.push(['<=', ['coalesce', ['get', 'passengers'], 0], max_val]);
+
+		return filter;
+	});
+
+	let filters_open = $state(true);
+
 	// TODO: set line thickness of routes to prevent overlapping
 	// maybe use https://stackoverflow.com/questions/72251218/variable-line-offset-in-mapbox line offset to prevent overlapping
 </script>
 
+<div class="absolute z-50 top-0 left-0">
+	<div class="flex flex-col gap-1 p-2 m-2 rounded-lg bg-white/50 dark:bg-black/50 backdrop-blur-md">
+		<div class="flex justify-between gap-1 items-center min-w-52">
+			<div class="text-lg font-semibold">Filters</div>
+			<button
+				onclick={() => {
+					filters_open = !filters_open;
+				}}
+				class="underline text-sm text-blue-500 hover:text-blue-700"
+				>{filters_open ? 'Hide' : 'Show'}</button
+			>
+		</div>
+		{#if filters_open}
+			<div class="flex flex-col gap-1" transition:slide>
+				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+					<span>Overlapping</span>
+					<input bind:checked={show_overlapping} type="checkbox" />
+				</label>
+				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+					<span>Unknown passengers</span>
+					<input bind:checked={show_unknown} type="checkbox" />
+				</label>
+				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+					<span>Min passengers</span>
+					<input bind:value={min_val} type="number" inputmode="numeric" min="0" class="w-16" />
+				</label>
+				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+					<span>Max passengers</span>
+					<input bind:value={max_val} type="number" inputmode="numeric" min="0" class="w-16" />
+				</label>
+			</div>
+		{/if}
+	</div>
+</div>
 <!-- diffStyleUpdates -->
 <MapLibre
 	bind:map
@@ -102,13 +156,5 @@
 
 	<Routes geojson={$page.data.routes} />
 	<Stops geojson={$page.data.stops} />
-	<Trips geojson={$page.data.trips} {map} />
+	<Trips geojson={$page.data.trips} map={map!} {show_overlapping} filter={trips_filter} />
 </MapLibre>
-
-<!-- <style>
-	:global(.maplibregl-popup-content) {
-		background-color: var(--color-bg);
-		color: var(--color-text);
-		padding: 0px;
-	}
-</style> -->
