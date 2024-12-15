@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { GeoJSON, Popup, SymbolLayer } from 'svelte-maplibre';
+	import { mode } from 'mode-watcher';
 	import { env } from '$env/dynamic/public';
 
 	interface Props {
@@ -66,43 +67,53 @@
 		id="trips"
 		hoverCursor="pointer"
 		{filter}
-		layout={{
-			// 'icon-image': ['match', ['get', 'direction'], 0, 'bus_right', 1, 'bus_left', 'bus_left'],
-			// 'icon-image': 'bus_white_left',
-			// 'icon-image': [
-			// 	'case',
-			// 	['>', ['get', 'passengers'], 50],
-			// 	'bus_full',
-			// 	['>', ['get', 'passengers'], 30],
-			// 	'bus_half_full',
-			// 	'bus_white_left' // default color
-			// ],
-			'icon-image': [
+		paint={{
+			'icon-color': [
 				'case',
-				// If capacity is 0, use 'bus_white_left'
-				// ['==', ['get', 'capacity'], 0],
-				// 'bus_white_left',
-
 				// Calculate passengers / capacity with coalesce to handle nulls
 				[
 					'>',
 					['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
 					0.5
 				],
-				'bus_full',
+				'#b91c1c',
 
 				[
 					'>',
 					['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
 					0.3
 				],
-				'bus_half_full',
+				'#facc15',
+				// default
+				$mode !== 'light' ? '#FFFFFF' : '#000000'
+			]
+			// 'icon-color': $mode !== 'light' ? '#FFFFFF' : '#000000'
+		}}
+		layout={{
+			// 'icon-image': ['match', ['get', 'direction'], 0, 'bus_right', 1, 'bus_left', 'bus_left'],
+			// 'icon-image': [
+			// 	'case',
+			// 	// Calculate passengers / capacity with coalesce to handle nulls
+			// 	[
+			// 		'>',
+			// 		['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
+			// 		0.5
+			// 	],
+			// 	'bus_full',
 
-				// Default icon if none of the above conditions are met
-				'bus_white_left'
-			],
+			// 	[
+			// 		'>',
+			// 		['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
+			// 		0.3
+			// 	],
+			// 	'bus_half_full',
+			// 	// Default icon if none of the above conditions are met
+			// 	'bus_white_left'
+			// ],
+
+			'icon-image': 'bus_sdf',
 			// 'icon-size': ['interpolate', ['exponential', 0.5], ['zoom'], 8, 0.05, 17, 0.1],
-			'icon-size': 0.1,
+			'icon-size': 0.15,
 			'icon-rotate': ['coalesce', ['get', 'bearing'], 0],
 			'icon-allow-overlap': show_overlapping
 		}}

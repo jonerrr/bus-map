@@ -34,7 +34,7 @@
 			// 	17,
 			// 	10
 			// ],
-			'line-width': 4,
+			'line-width': 3,
 
 			'line-color': ['get', 'color'],
 			'line-opacity': 1.0

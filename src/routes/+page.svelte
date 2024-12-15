@@ -9,12 +9,6 @@
 	import Stops from '$lib/Stops.svelte';
 	import { slide } from 'svelte/transition';
 
-	// import StopsCool from '$lib/light-version/Stops.svelte';
-	// import TripsCool from '$lib/light-version/Trips.svelte';
-	// import RoutesCool from '$lib/light-version/Routes.svelte';
-
-	// let map: maplibregl.Map | undefined = $state();
-	// let loaded: boolean = $state(false);
 	let map = $state<maplibregl.Map>();
 
 	onMount(() => {
@@ -36,7 +30,7 @@
 
 		const filter: maplibregl.ExpressionSpecification = ['all'];
 		// need to coalesce bc some values are null
-		if (!show_unknown)  filter.push(['!=', ['coalesce', ['get', 'passengers'], -1], -1]);
+		if (!show_unknown) filter.push(['!=', ['coalesce', ['get', 'passengers'], -1], -1]);
 		if (min_val) filter.push(['>=', ['coalesce', ['get', 'passengers'], 0], min_val]);
 		if (max_val) filter.push(['<=', ['coalesce', ['get', 'passengers'], 0], max_val]);
 
@@ -73,11 +67,23 @@
 				</label>
 				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
 					<span>Min passengers</span>
-					<input bind:value={min_val} type="number" inputmode="numeric" min="0" class="w-16" />
+					<input
+						bind:value={min_val}
+						type="number"
+						inputmode="numeric"
+						min="0"
+						class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
+					/>
 				</label>
 				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
 					<span>Max passengers</span>
-					<input bind:value={max_val} type="number" inputmode="numeric" min="0" class="w-16" />
+					<input
+						bind:value={max_val}
+						type="number"
+						inputmode="numeric"
+						min="0"
+						class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
+					/>
 				</label>
 			</div>
 		{/if}
@@ -107,30 +113,22 @@
 		// const bus_up = await map.loadImage($mode !== 'light' ? '/bus-up-white.png' : '/bus-up.png');
 		// map.addImage('bus_up', bus_up.data);
 
-		const images = [
-			`bus_${$mode !== 'light' ? 'white' : 'black'}_left`,
-			// `but_white_right`,
-			'bus_full',
-			'bus_half_full'
-		];
+		// const images = [
+		// 	`bus_${$mode !== 'light' ? 'white' : 'black'}_left`,
+		// 	// `but_white_right`,
+		// 	'bus_full',
+		// 	'bus_half_full'
+		// ];
 
-		for (const img of images) {
-			const image = await map.loadImage(`/${img}.png`);
-			map.addImage(img, image.data);
-		}
-
-		// const bus_right = await map.loadImage(
-		// 	$mode !== 'light' ? '/bus_white_right.png' : '/bus_black_right.png'
-		// );
-		// map.addImage('bus_right', bus_right.data);
-
-		// const bus_left = await map.loadImage(
-		// 	$mode !== 'light' ? '/bus_white_left.png' : '/bus_black_left.png'
-		// );
-		// map.addImage('bus_left', bus_left.data);
-
-		// const stop = await map.loadImage($mode !== 'light' ? '/bus_stop.png' : '/bus_stop.png');
-		// map.addImage('bus_stop', stop.data);
+		// Promise.all([
+		// 	...images.map(async (img) => {
+		// 		const image = await map.loadImage(`/${img}.png`);
+		// 		map.addImage(img, image.data);
+		// 	})
+		// ]);
+		// generated using https://jobtalle.com/SDFMaker/
+		const img_sdf = await map.loadImage('/bus_sdf.png');
+		map.addImage('bus_sdf', img_sdf.data, { sdf: true });
 	}}
 	center={[-74.006, 40.7128]}
 	maxBounds={[
