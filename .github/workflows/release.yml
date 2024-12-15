@@ -50,13 +50,3 @@ jobs:
         with:
           title: ${{ env.VERSION }}
           tag: ${{ env.VERSION }}
-      # - name: Create Release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: v${{ env.VERSION }}
-      #     release_name: Release v${{ env.VERSION }}
-      #     body: 'Automated release based on version bump to v${{ env.VERSION }}.'
-      #     draft: false
-      #     prerelease: false
