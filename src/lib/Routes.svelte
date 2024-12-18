@@ -20,7 +20,6 @@
 <GeoJSON id="routes" data={geojson}>
 	<!-- TODO: make sure direction is correct -->
 	<LineLayer
-		hoverCursor="pointer"
 		layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 		paint={{
 			// 'line-width': [
@@ -39,6 +38,39 @@
 			'line-color': ['get', 'color'],
 			'line-opacity': 1.0
 			// 'line-offset': 5
+		}}
+	>
+		<!-- <Popup>
+			{#snippet children({ data }: { data: GeoJSON.Feature<GeoJSON.Geometry, Route> | undefined })}
+				{#if data}
+					{@const clicked_feature = data.properties}
+					<div class={`max-w-[70vw]`}>
+						<h1 class="font-bold text-lg" style={`color: ${clicked_feature.color}`}>
+							{clicked_feature.short_name} | {clicked_feature.long_name}
+						</h1>
+						<div>
+							<a
+								href={`${env.PUBLIC_FRONTEND_URL}/?r=${encodeURIComponent(clicked_feature.id)}`}
+								target="_blank"
+								rel="noopener"
+								class="font-semibold underline text-md text-indigo-700"
+							>
+								Live bus alerts
+							</a>
+						</div>
+					</div>
+				{/if}
+			{/snippet}
+		</Popup> -->
+	</LineLayer>
+	<!-- An invisible, wider layer that overlays the top one to make hovering easier. -->
+	<LineLayer
+		id="popup-catcher"
+		hoverCursor="pointer"
+		layout={{ 'line-cap': 'round' }}
+		paint={{
+			'line-opacity': 0.0,
+			'line-width': 20
 		}}
 	>
 		<Popup>

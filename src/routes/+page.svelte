@@ -20,8 +20,14 @@
 		return () => clearInterval(interval);
 	});
 
+	// should definitely make something more reusable
+	let show_stops = $state(true);
+	let show_routes = $state(true);
+	let show_trips = $state(true);
+
 	let show_overlapping = $state(true);
 	let show_unknown = $state(true);
+
 	let min_val = $state<number>();
 	let max_val = $state<number>();
 
@@ -58,33 +64,49 @@
 		{#if filters_open}
 			<div class="flex flex-col gap-1" transition:slide>
 				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
-					<span>Overlapping</span>
-					<input bind:checked={show_overlapping} type="checkbox" />
+					<span>Routes</span>
+					<input bind:checked={show_routes} type="checkbox" />
 				</label>
 				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
-					<span>Unknown passengers</span>
-					<input bind:checked={show_unknown} type="checkbox" />
+					<span>Stops</span>
+					<input bind:checked={show_stops} type="checkbox" />
 				</label>
 				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
-					<span>Min passengers</span>
-					<input
-						bind:value={min_val}
-						type="number"
-						inputmode="numeric"
-						min="0"
-						class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
-					/>
+					<span>Trips</span>
+					<input bind:checked={show_trips} type="checkbox" />
 				</label>
-				<label class="grid grid-cols-[1fr,auto] items-center gap-2">
-					<span>Max passengers</span>
-					<input
-						bind:value={max_val}
-						type="number"
-						inputmode="numeric"
-						min="0"
-						class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
-					/>
-				</label>
+				{#if show_trips}
+					<div class="flex flex-col gap-1" transition:slide>
+						<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+							<span>Overlapping</span>
+							<input bind:checked={show_overlapping} type="checkbox" />
+						</label>
+						<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+							<span>Unknown passengers</span>
+							<input bind:checked={show_unknown} type="checkbox" />
+						</label>
+						<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+							<span>Min passengers</span>
+							<input
+								bind:value={min_val}
+								type="number"
+								inputmode="numeric"
+								min="0"
+								class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
+							/>
+						</label>
+						<label class="grid grid-cols-[1fr,auto] items-center gap-2">
+							<span>Max passengers</span>
+							<input
+								bind:value={max_val}
+								type="number"
+								inputmode="numeric"
+								min="0"
+								class="w-16 rounded border border-neutral-900 dark:border-neutral-100"
+							/>
+						</label>
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -152,7 +174,13 @@
 		fitBoundsOptions={{ maxZoom: 15 }}
 	/>
 
-	<Routes geojson={$page.data.routes} />
-	<Stops geojson={$page.data.stops} />
-	<Trips geojson={$page.data.trips} map={map!} {show_overlapping} filter={trips_filter} />
+	{#if show_routes}
+		<Routes geojson={$page.data.routes} />
+	{/if}
+	{#if show_stops}
+		<Stops geojson={$page.data.stops} />
+	{/if}
+	{#if show_trips}
+		<Trips geojson={$page.data.trips} map={map!} {show_overlapping} filter={trips_filter} />
+	{/if}
 </MapLibre>
