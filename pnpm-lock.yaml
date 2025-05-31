@@ -30,6 +30,9 @@ importers:
       '@types/eslint':
         specifier: ^9.6.1
         version: 9.6.1
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
       eslint:
         specifier: ^9.27.0
         version: 9.27.0(jiti@2.4.2)

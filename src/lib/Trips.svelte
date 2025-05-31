@@ -20,7 +20,8 @@
 		direction: 0 | 1;
 		route_id: string;
 		stop_id?: number;
-		status: 'None' | 'Layover';
+		// status: 'None' | 'Layover';
+		status: string;
 		bearing: number;
 		vehicle_id: string;
 	}
@@ -69,23 +70,23 @@
 		{filter}
 		paint={{
 			'icon-color': [
-				'case',
-				// Calculate passengers / capacity with coalesce to handle nulls
+				'interpolate',
+				['linear'],
+				// Calculate passengers / capacity ratio. Coalesce to handle nulls and prevent division by zero.
 				[
-					'>',
-					['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
-					0.5
-				],
-				'#b91c1c',
-
-				[
-					'>',
-					['/', ['coalesce', ['get', 'passengers'], 0], ['coalesce', ['get', 'capacity'], 1]],
-					0.3
-				],
-				'#facc15',
-				// default
-				$mode !== 'light' ? '#FFFFFF' : '#000000'
+					'/',
+					['coalesce', ['get', 'passengers'], 0],
+					['coalesce', ['get', 'capacity'], 1, 0.00001]
+				], // Added a small epsilon to capacity to avoid division by zero if capacity is 0
+				// Define color stops for the gradient based on the ratio
+				0, // Ratio 0 (0% full)
+				$mode !== 'light' ? '#FFFFFF' : '#0a0a0a', // Green for light mode, white for dark
+				0.3, // Ratio 0.3 (30% full)
+				'#facc15', // Yellow
+				0.5, // Ratio 0.5 (50% full)
+				'#FFA500', // Orange
+				1, // Ratio 1 (100% full or more)
+				'#b91c1c' // Red
 			]
 			// 'icon-color': $mode !== 'light' ? '#FFFFFF' : '#000000'
 		}}
@@ -118,11 +119,13 @@
 			'icon-allow-overlap': show_overlapping
 		}}
 	>
-		<Popup>
+		<Popup popupClass="popup-transparent">
 			{#snippet children({ data }: { data: GeoJSON.Feature<GeoJSON.Geometry, Trip> | undefined })}
 				{#if data}
 					{@const clicked_feature = data.properties}
-					<div class={`max-w-[70vw] flex flex-col gap-1 text-black`}>
+					<div
+						class={`max-w-[70vw] flex flex-col gap-1 rounded-lg bg-white/50 dark:bg-black/50 backdrop-blur-md p-2`}
+					>
 						<div class="flex items-center justify-between gap-1">
 							<h1 class="font-bold text-lg">{clicked_feature.route_id}</h1>
 							<h3>#{clicked_feature.vehicle_id}</h3>
@@ -147,6 +150,11 @@
 								<span class="font-bold">passengers</span>: unknown
 							</div>
 						{/if}
+
+						<div class="flex gap-1">
+							<span class="font-bold">status</span>: {clicked_feature.status}
+						</div>
+
 						<div>
 							<a
 								href={`${env.PUBLIC_FRONTEND_URL}/?t=${clicked_feature.id}`}

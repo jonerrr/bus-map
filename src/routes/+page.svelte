@@ -3,7 +3,7 @@
 	import { mode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Routes from '$lib/Routes.svelte';
 	import Trips from '$lib/Trips.svelte';
 	import Stops from '$lib/Stops.svelte';
@@ -13,9 +13,11 @@
 
 	onMount(() => {
 		const interval = setInterval(async () => {
-			console.log('updating trips');
+			// console.log('updating trips');
 			await invalidate('app:trips');
-		}, 20000);
+			const trips = map?.querySourceFeatures('trips');
+			console.log(`loaded ${trips?.length} trips`);
+		}, 15000);
 
 		return () => clearInterval(interval);
 	});
@@ -47,10 +49,13 @@
 
 	// TODO: set line thickness of routes to prevent overlapping
 	// maybe use https://stackoverflow.com/questions/72251218/variable-line-offset-in-mapbox line offset to prevent overlapping
+	// TODO: add loading indicator
 </script>
 
 <div class="absolute z-50 top-0 left-0">
 	<div class="flex flex-col gap-1 p-2 m-2 rounded-lg bg-white/50 dark:bg-black/50 backdrop-blur-md">
+		<!-- <div class="text-lg font-bold">Realtime Bus Map</div> -->
+
 		<div class="flex justify-between gap-1 items-center min-w-52">
 			<div class="text-lg font-semibold">Filters</div>
 			<button
@@ -109,6 +114,14 @@
 				{/if}
 			</div>
 		{/if}
+		<div class="text-xs mt-2">
+			Data from <a
+				href="https://trainstat.us"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="underline text-blue-500 hover:text-blue-700">Train Status</a
+			>
+		</div>
 	</div>
 </div>
 <!-- diffStyleUpdates -->
@@ -161,7 +174,7 @@
 	maxZoom={17}
 	class="w-[100dvw] h-[100dvh]"
 	standardControls={false}
-	attributionControl={false}
+	attributionControl={{ compact: true }}
 	style={$mode !== 'light'
 		? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 		: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'}
@@ -175,12 +188,22 @@
 	/>
 
 	{#if show_routes}
-		<Routes geojson={$page.data.routes} />
+		<Routes geojson={page.data.routes} />
 	{/if}
 	{#if show_stops}
-		<Stops geojson={$page.data.stops} />
+		<Stops geojson={page.data.stops} />
 	{/if}
 	{#if show_trips}
-		<Trips geojson={$page.data.trips} map={map!} {show_overlapping} filter={trips_filter} />
+		<Trips geojson={page.data.trips} map={map!} {show_overlapping} filter={trips_filter} />
 	{/if}
 </MapLibre>
+
+<style>
+	:global(.popup-transparent .maplibregl-popup-content) {
+		background: transparent;
+		padding: 0;
+	}
+	:global(.popup-transparent .maplibregl-popup-close-button) {
+		color: inherit; /* Inherit color from parent, or set a specific color */
+	}
+</style>

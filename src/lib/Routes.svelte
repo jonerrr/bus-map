@@ -15,6 +15,7 @@
 	// let clicked_feature: Route | undefined = $state();
 
 	// $inspect(clicked_feature);
+	// TODO: always have trips above routes, see: https://github.com/mapbox/mapbox-gl-js/issues/7016
 </script>
 
 <GeoJSON id="routes" data={geojson}>
@@ -34,7 +35,14 @@
 			// 	10
 			// ],
 			'line-width': 3,
-
+			// 'line-offset': 6,
+			'line-offset': [
+				'step', // Use the 'step' expression
+				['zoom'], // Get the current zoom level
+				0, // Default value if zoom is less than the first stop (15)
+				15, // First stop: zoom level 15
+				6 // Value if zoom is 15 or greater
+			],
 			'line-color': ['get', 'color'],
 			'line-opacity': 1.0
 			// 'line-offset': 5
