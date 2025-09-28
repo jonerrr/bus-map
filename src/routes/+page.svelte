@@ -12,23 +12,9 @@
 	} from 'svelte-maplibre-gl';
 	import maplibregl from 'maplibre-gl';
 	import { mode } from 'mode-watcher';
-	import { onMount } from 'svelte';
-	import { invalidate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
-
-	// let map = $state<maplibregl.Map>();
-
-	// onMount(() => {
-	// 	const interval = setInterval(async () => {
-	// 		// console.log('updating trips');
-	// 		await invalidate('app:trips');
-	// 		const trips = map?.querySourceFeatures('trips');
-	// 		console.log(`loaded ${trips?.length} trips`);
-	// 	}, 15000);
-
-	// 	return () => clearInterval(interval);
-	// });
+	import { onMount } from 'svelte';
 
 	// TODO: figure out why this updates everytime trips are updated
 	// const headsigns_by_route_direction = $derived.by(() => {
@@ -51,6 +37,19 @@
 	// 	return headsigns;
 	// });
 	// $inspect(headsigns_by_route_direction);
+
+	let trip_tiles = $state.raw([`${page.url.origin}/m/latest_vehicle_position/{z}/{x}/{y}`]);
+
+	// TODO: prevent flash on update
+	onMount(() => {
+		setInterval(() => {
+			// console.log('updating trip tiles url');
+			// cache bust by adding timestamp
+			trip_tiles = [`${page.url.origin}/m/latest_vehicle_position/{z}/{x}/{y}`];
+		}, 5000);
+	});
+
+	$inspect(trip_tiles);
 
 	let hovered_stop: maplibregl.MapGeoJSONFeature | undefined = $state.raw();
 	// there can be multiple routes on one line
@@ -182,12 +181,6 @@
 	maxZoom={17}
 	{cursor}
 	class="w-[100dvw] h-[100dvh]"
-	onclick={() => {
-		// console.log('asd');
-		// clicked_routes = undefined;
-		// clicked_stop = undefined;
-		// clicked_trip = undefined;
-	}}
 >
 	<GeolocateControl
 		position="bottom-left"
@@ -306,11 +299,7 @@
 
 	{#if show_trips}
 		<!-- TODO: make id serial in db -->
-		<VectorTileSource
-			id="latest_vehicle_position"
-			promoteId="id"
-			tiles={[`${page.url.origin}/m/latest_vehicle_position/{z}/{x}/{y}`]}
-		>
+		<VectorTileSource id="latest_vehicle_position" promoteId="id" tiles={trip_tiles}>
 			<ImageLoader
 				images={{
 					bus: [
@@ -390,7 +379,9 @@
 						<span class="font-bold" style="color: {clicked_trip.properties.route_color}">
 							{clicked_trip.properties.route_short_name}
 						</span>
-						<span class="text-xs">Vehicle {clicked_trip.properties.vehicle_id}</span>
+						<span class="text-xs"
+							>Vehicle {clicked_trip.properties.vehicle_id} | {clicked_trip.properties.status}</span
+						>
 						<hr />
 						<div class="text-sm">
 							<span class="font-semibold">Passengers:</span>
