@@ -1,31 +1,10 @@
 <script lang="ts">
-	import { GeoJSON, Popup, SymbolLayer, CircleLayer } from 'svelte-maplibre';
+	import { GeoJSON, Popup, CircleLayer } from 'svelte-maplibre';
 	import { env } from '$env/dynamic/public';
+	import type { FeatureCollection, Point } from 'geojson';
+	import type { Route, StopData, Stop } from './types';
 
-	const { geojson }: { geojson: string } = $props();
-
-	interface Stop {
-		id: number;
-		name: string;
-		routes: string;
-		data: string;
-		// routes: RouteStop[];
-		// data: RouteData;
-	}
-
-	interface RouteStop {
-		direction: number;
-		id: string;
-		headsign: string;
-	}
-
-	interface RouteData {
-		direction: string;
-	}
-
-	// let clicked_feature: Stop | undefined = $state(undefined);
-
-	// $inspect(clicked_feature);
+	const { geojson }: { geojson: FeatureCollection<Point, Stop> } = $props();
 </script>
 
 <GeoJSON id="stops" data={geojson}>
@@ -38,25 +17,25 @@
 		}}
 		hoverCursor="pointer"
 		paint={{
-			// 'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 17, 15],
+			'circle-radius': ['interpolate', ['linear'], ['zoom'], 15, 3, 17, 15],
 			'circle-color': '#0074D9',
 			'circle-opacity': 1
 		}}
 		minzoom={14}
 	>
 		<Popup>
-			{#snippet children({ data }: { data: GeoJSON.Feature<GeoJSON.Geometry, Stop> | undefined })}
+			{#snippet children({ data }: { data: GeoJSON.Feature<Point, Stop> | undefined })}
 				{#if data}
 					{@const clicked_feature = data.properties}
-					{@const routes = JSON.parse(clicked_feature.routes) as RouteStop[]}
-					{@const route_data = JSON.parse(clicked_feature.data) as RouteData}
+					{@const routes = JSON.parse(clicked_feature.routes as unknown as string) as Route[]}
+					{@const stop_data = JSON.parse(clicked_feature.data as unknown as string) as StopData}
 					<div class={`rounded-xl flex flex-col gap-1 text-black`}>
 						<h1 class="font-bold text-lg">
 							{clicked_feature.name}
 						</h1>
 						<div class="flex gap-1">
 							<div class="font-bold">Direction:</div>
-							{route_data.direction}
+							{stop_data.direction.toUpperCase()}
 						</div>
 
 						<div class="font-bold">Routes:</div>
